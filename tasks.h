@@ -19,6 +19,7 @@ public:
 
     UTF8String() = default;
     UTF8String(const char* from_string);
+    UTF8String(const std::string& from_string);
     UTF8String(const UTF8String& other);
     UTF8String(std::vector<CodePoint> points);
     ~UTF8String();

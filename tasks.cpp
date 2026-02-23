@@ -8,6 +8,9 @@ UTF8String::UTF8String(const char* from_string) {
     memcpy(data, from_string, size);
 }
 
+UTF8String::UTF8String(const std::string& from_string)
+    : UTF8String(from_string.c_str()) {}
+
 UTF8String::UTF8String(const UTF8String& other) {
     size = other.size;
     capacity = other.size;
