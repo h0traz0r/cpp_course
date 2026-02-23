@@ -7,9 +7,11 @@
 #include <utility>
 #include <cstring>
 
+
 using CodePoint = uint32_t;
 
 class UTF8String {
+
 
     char *data = nullptr;
 
@@ -37,10 +39,52 @@ public:
 
 
     }
+    UTF8String(const UTF8String& other) {
+        size = other.size;
+        capacity = other.size;
+        data = new char[capacity];
+        memcpy(data,other.data,size);
+
+
+    }
+
+    UTF8String& operator=(const UTF8String& other) {
+        if (this == &other ) return * this;
+        delete[] data;
+        size = other.size;
+        capacity = other.size;
+        data = new char[capacity];
+        memcpy(data,other.data,size);
+
+
+        return *this;
+
+    }
+
 
     UTF8String(std::vector<CodePoint>) {
 
     }
+
+    size_t get_byte_count() const { return size; }
+
+    std::optional<char> operator[](size_t index) const {
+        if (index >= size) return std::nullopt;
+        return data[index];
+    }
+
+    void operator+=(const UTF8String& other) {
+        reserve(size + other.get_byte_count());
+        memcpy(data + size,other.data,other.get_byte_count());
+
+        size += other.get_byte_count();
+
+    }
+
+
+
+
+
 
     void reserve(size_t new_cap) {
         if (new_cap <= capacity)
@@ -48,10 +92,12 @@ public:
 
 
         char * new_data = new char[new_cap];
-        std::memcpy(new_data,data,size + 1);
+        if (size > 0)
+            std::memcpy(new_data,data,size);
         delete[] data;
         data = new_data;
         capacity = new_cap;
+
 
     }
 
@@ -99,7 +145,7 @@ public:
             len = 3;
         } else {
             buf[0] = 0xF0 | (cp >> 18);
-            buf[1] = 0x80 | ((cp >> 12) & 0x3F);
+            buf[1] = 0x80 | ((cp >> 12)e& 0x3F);
             buf[2] = 0x80 | ((cp >> 6) & 0x3F);
             buf[3] = 0x80 | (cp & 0x3F);
             len = 4;
@@ -112,15 +158,10 @@ public:
 
 
     ~UTF8String() {
-
+        delete[] data;
     }
 
-    UTF8String(const UTF8String& other) {
 
-    }
 
-    UTF8String& operator=(const UTF8String& other) {
-
-    }
 
 };
