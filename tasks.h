@@ -21,7 +21,14 @@ class UTF8String {
 
 public:
 
-    UTF8String(  char * from_string) {
+    UTF8String() {
+        data = new char[capacity];
+        size = 0;
+    }
+
+
+
+    UTF8String(  const char * from_string) {
 
         size = strlen(from_string);
         capacity = size;
@@ -48,6 +55,15 @@ public:
 
     }
 
+
+    UTF8String(std::vector<CodePoint>) {
+
+    }
+
+    size_t get_byte_count() const { return size; }
+
+    //Operators
+
     UTF8String& operator=(const UTF8String& other) {
         if (this == &other ) return * this;
         delete[] data;
@@ -61,14 +77,26 @@ public:
 
     }
 
-
-    UTF8String(std::vector<CodePoint>) {
-
+    UTF8String& operator==(const UTF8String& other) {
+        return strcmp(data,other.data);
     }
 
-    size_t get_byte_count() const { return size; }
 
-    std::optional<char> operator[](size_t index) const {
+
+    UTF8String& operator!=(const UTF8String& other) {
+        return !strcmp(data,other.data);
+    }
+
+
+    UTF8String& operator+(const UTF8String& other) {
+        UTF8String result = * this;
+        result += other;
+        return result;
+    }
+
+
+
+    std::optional<uint_8> operator[](size_t index) const {
         if (index >= size) return std::nullopt;
         return data[index];
     }
@@ -83,6 +111,10 @@ public:
 
 
 
+
+    explicit operator std::string const{
+        return std::string(data,size);
+    }
 
 
 
@@ -145,7 +177,7 @@ public:
             len = 3;
         } else {
             buf[0] = 0xF0 | (cp >> 18);
-            buf[1] = 0x80 | ((cp >> 12)e& 0x3F);
+            buf[1] = 0x80 | ((cp >> 12)& 0x3F);
             buf[2] = 0x80 | ((cp >> 6) & 0x3F);
             buf[3] = 0x80 | (cp & 0x3F);
             len = 4;
